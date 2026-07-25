@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "server-hats",
+  "version": "${version}",
+  "name": "Server Hats",
+  "description": "Server-side Fabric mod that allows players equip items as hats. You don't need this mod on a client unless you want to use it in your singleplayer world!",
+  "authors": [
+    "WerDei"
+  ],
+  "contact": {
+    "sources": "https://github.com/WerDei/Server-Hats",
+    "issues": "https://github.com/WerDei/Server-Hats/issues"
+  },
+  "license": "MIT",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.werdei.serverhats.ServerHats"
+    ]
+  },
+  "mixins": [
+    "server-hats.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "fabric-api": "*",
+    "minecraft": "~1.21.11",
+    "java": ">=21"
+  }
+}

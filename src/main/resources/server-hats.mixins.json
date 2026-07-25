@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.werdei.serverhats.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ArmorSlotMixin",
+    "ArmorStandEntityMixin",
+    "EnchantmentMixin",
+    "LivingEntityMixin",
+    "MinecraftServerMixin",
+    "MobEntityMixin",
+    "PlayerScreenHandlerMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
