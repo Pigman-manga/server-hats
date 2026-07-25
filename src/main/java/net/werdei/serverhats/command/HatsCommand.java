@@ -20,11 +20,11 @@ public class HatsCommand
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess)
     {
-        itemRegistryWrapper = commandRegistryAccess.getWrapperOrThrow(RegistryKeys.ITEM);
+        itemRegistryWrapper = commandRegistryAccess.getOrThrow(RegistryKeys.ITEM);
 
-        var rootArgument = CommandManager.literal("hats").requires(source ->
-                source.hasPermissionLevel(2)
-        ).then(CommandManager.literal("reload").executes((context) ->
+        var rootArgument = CommandManager.literal("hats")
+                .requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK))
+                .then(CommandManager.literal("reload").executes((context) ->
                 reload(context.getSource())
         ));
 

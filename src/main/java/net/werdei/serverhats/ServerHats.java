@@ -36,7 +36,7 @@ public class ServerHats implements ModInitializer
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) ->
         {
             HatsCommand.register(dispatcher, registryAccess);
-            itemRegistryWrapper = registryAccess.getWrapperOrThrow(RegistryKeys.ITEM);
+            itemRegistryWrapper = registryAccess.getOrThrow(RegistryKeys.ITEM);
             reloadConfig();
         }));
     }
