@@ -19,13 +19,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ServerHats implements ModInitializer
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String LOG_PREFIX = "[ServerHats]: ";
 
-    private static HashSet<Item> allowedItems = new HashSet<>();
+    private static Set<Item> allowedItems = new HashSet<>();
     private static boolean itemListsInitialized = false;
     private static RegistryWrapper<Item> itemRegistryWrapper;
 
@@ -61,8 +62,18 @@ public class ServerHats implements ModInitializer
 
     public static void recalculateItemLists(OnOutput info, OnOutput warning)
     {
+        if (info == null) info = ServerHats::log;
+        if (warning == null) warning = ServerHats::warn;
+
         itemListsInitialized = false;
         allowedItems = new HashSet<>();
+
+        if (Config.allowedItems == null)
+        {
+            warning.sendMessage("allowedItems is missing or null; no custom hats will be added");
+            itemListsInitialized = true;
+            return;
+        }
 
         if (itemRegistryWrapper == null)
         {
