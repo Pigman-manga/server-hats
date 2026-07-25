@@ -5,7 +5,7 @@ Server-side Fabric mod that allows players equip items as hats.
 To equip an allowed item, simply put it in the helmet slot - no commands necessary!  
 The mod is very customizable, making it easy to tune it to your preference.
 
-Requires Fabric API  
+Requires Minecraft 1.21.11, Fabric Loader 0.19.3 or newer, and Fabric API.
 
 ## Features
 By default, mod allows players to equip most items that have special rendering rules in vanilla Minecraft:
@@ -32,7 +32,7 @@ And some other ones I thought looked cool\funny:
 
 You can remove/add any items to this list. You can also make it so any item in the game can be used as a hat!
 
-These items can also be equipped to players with a dispenser and can be enchanted with curse enchantments on an anvil (for when you want to test your friendships).
+These items can also be enchanted with curse enchantments on an anvil (for when you want to test your friendships). Dispenser equipping is not available in the 1.21.11 version because vanilla equipment handling changed.
 
 Shift-clicking these items will not equip them - that way players won't accidentally end up with their building blocks on their heads.
 
