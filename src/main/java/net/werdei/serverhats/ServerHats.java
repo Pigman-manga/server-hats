@@ -62,22 +62,21 @@ public class ServerHats implements ModInitializer
 
     public static void recalculateItemLists(OnOutput info, OnOutput warning)
     {
-        if (info == null) info = ServerHats::log;
-        if (warning == null) warning = ServerHats::warn;
+        OnOutput warningOutput = warning == null ? ServerHats::warn : warning;
 
         itemListsInitialized = false;
         allowedItems = new HashSet<>();
 
         if (Config.allowedItems == null)
         {
-            warning.sendMessage("allowedItems is missing or null; no custom hats will be added");
+            warningOutput.sendMessage("allowedItems is missing or null; no custom hats will be added");
             itemListsInitialized = true;
             return;
         }
 
         if (itemRegistryWrapper == null)
         {
-            warning.sendMessage("Item registry is not ready yet; allowed item list will be built when commands initialize");
+            warningOutput.sendMessage("Item registry is not ready yet; allowed item list will be built when commands initialize");
             return;
         }
 
@@ -85,11 +84,11 @@ public class ServerHats implements ModInitializer
         {
             try
             {
-                parseAllowedEntry(string, warning);
+                parseAllowedEntry(string, warningOutput);
             }
             catch (Exception e)
             {
-                warning.sendMessage("Skipping \"" + string + "\": " + e.getMessage());
+                warningOutput.sendMessage("Skipping \"" + string + "\": " + e.getMessage());
             }
         });
         itemListsInitialized = true;
