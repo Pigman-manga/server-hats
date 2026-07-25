@@ -16,11 +16,9 @@ public abstract class ConfigLoader
     public static void load(Class<?> configClass, String fileName)
     {
         File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), fileName);
-        try
+        try (FileReader reader = new FileReader(file))
         {
-            FileReader reader = new FileReader(file);
             gsonBuilder.create().fromJson(reader, configClass);
-            reader.close();
         }
         catch (Exception ignored) {}
 
@@ -29,11 +27,9 @@ public abstract class ConfigLoader
     public static void save(Class<?> configClass, String fileName) throws ConfigException
     {
         File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), fileName);
-        try
+        try (FileWriter writer = new FileWriter(file))
         {
-            FileWriter writer = new FileWriter(file);
             writer.write(gsonBuilder.create().toJson(configClass.getConstructor().newInstance()));
-            writer.close();
         }
         catch (Exception e)
         {

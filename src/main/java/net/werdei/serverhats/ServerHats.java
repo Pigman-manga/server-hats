@@ -13,19 +13,19 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.werdei.serverhats.command.HatsCommand;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.List;
 
-@SuppressWarnings("FieldMayBeFinal")
 public class ServerHats implements ModInitializer
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String LOG_PREFIX = "[ServerHats]: ";
 
-    private static HashSet<Item> allowedItems = null;
+    private static HashSet<Item> allowedItems = new HashSet<>();
     private static boolean itemListsInitialized = false;
     private static RegistryWrapper<Item> itemRegistryWrapper;
 
@@ -36,6 +36,7 @@ public class ServerHats implements ModInitializer
         {
             HatsCommand.register(dispatcher, registryAccess);
             itemRegistryWrapper = registryAccess.getWrapperOrThrow(RegistryKeys.ITEM);
+            reloadConfig();
         }));
     }
 

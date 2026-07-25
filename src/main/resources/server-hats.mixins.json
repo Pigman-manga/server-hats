@@ -7,8 +7,6 @@
     "ArmorSlotMixin",
     "ArmorStandEntityMixin",
     "EnchantmentMixin",
-    "LivingEntityMixin",
-    "MinecraftServerMixin",
     "MobEntityMixin",
     "PlayerScreenHandlerMixin"
   ],
