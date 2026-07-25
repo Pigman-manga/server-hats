@@ -6,6 +6,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 
 public abstract class ConfigLoader
 {
@@ -16,11 +17,9 @@ public abstract class ConfigLoader
     public static void load(Class<?> configClass, String fileName)
     {
         File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), fileName);
-        try
+        try (FileReader reader = new FileReader(file))
         {
-            FileReader reader = new FileReader(file);
             gsonBuilder.create().fromJson(reader, configClass);
-            reader.close();
         }
         catch (Exception ignored) {}
 
@@ -29,13 +28,19 @@ public abstract class ConfigLoader
     public static void save(Class<?> configClass, String fileName) throws ConfigException
     {
         File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), fileName);
-        try
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists() && !parent.mkdirs())
+            throw new ConfigException("Error creating config directory " + parent, null);
+
+        try (FileWriter writer = new FileWriter(file))
         {
-            FileWriter writer = new FileWriter(file);
             writer.write(gsonBuilder.create().toJson(configClass.getConstructor().newInstance()));
-            writer.close();
         }
-        catch (Exception e)
+        catch (IOException e)
+        {
+            throw new ConfigException("Error writing configuration file " + file, e);
+        }
+        catch (ReflectiveOperationException e)
         {
             throw new ConfigException("Error creating a temporary instance of class " + configClass.getName(), e);
         }

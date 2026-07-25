@@ -13,19 +13,20 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.werdei.serverhats.command.HatsCommand;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@SuppressWarnings("FieldMayBeFinal")
 public class ServerHats implements ModInitializer
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String LOG_PREFIX = "[ServerHats]: ";
 
-    private static HashSet<Item> allowedItems = null;
+    private static Set<Item> allowedItems = new HashSet<>();
     private static boolean itemListsInitialized = false;
     private static RegistryWrapper<Item> itemRegistryWrapper;
 
@@ -35,7 +36,8 @@ public class ServerHats implements ModInitializer
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) ->
         {
             HatsCommand.register(dispatcher, registryAccess);
-            itemRegistryWrapper = registryAccess.getWrapperOrThrow(RegistryKeys.ITEM);
+            itemRegistryWrapper = registryAccess.getOrThrow(RegistryKeys.ITEM);
+            reloadConfig();
         }));
     }
 
@@ -60,12 +62,21 @@ public class ServerHats implements ModInitializer
 
     public static void recalculateItemLists(OnOutput info, OnOutput warning)
     {
+        OnOutput warningOutput = warning == null ? ServerHats::warn : warning;
+
         itemListsInitialized = false;
         allowedItems = new HashSet<>();
 
+        if (Config.allowedItems == null)
+        {
+            warningOutput.sendMessage("allowedItems is missing or null; no custom hats will be added");
+            itemListsInitialized = true;
+            return;
+        }
+
         if (itemRegistryWrapper == null)
         {
-            warning.sendMessage("Item registry is not ready yet; allowed item list will be built when commands initialize");
+            warningOutput.sendMessage("Item registry is not ready yet; allowed item list will be built when commands initialize");
             return;
         }
 
@@ -73,11 +84,11 @@ public class ServerHats implements ModInitializer
         {
             try
             {
-                parseAllowedEntry(string, warning);
+                parseAllowedEntry(string, warningOutput);
             }
             catch (Exception e)
             {
-                warning.sendMessage("Skipping \"" + string + "\": " + e.getMessage());
+                warningOutput.sendMessage("Skipping \"" + string + "\": " + e.getMessage());
             }
         });
         itemListsInitialized = true;
