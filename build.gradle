@@ -1,0 +1,98 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+    id 'maven-publish'
+    id "com.modrinth.minotaur" version "2.8.7"
+    id "net.darkhax.curseforgegradle" version "1.1.26"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+    it.options.encoding = "UTF-8"
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
+
+
+// Mod publishing
+
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
+def versionDisplayName = project.mod_name + ' - ' + project.version
+def supportedMinecraftVersions = project.mod_supported_minecraft_versions.split(',').toList()
+def changelogText = new File('./CHANGELOG.md').text
+
+modrinth
+{
+    group 'upload'
+    token = project.findProperty("modrinth_token") ?: ""
+    projectId = project.modrinth_mod_id
+    versionName = versionDisplayName
+    versionNumber = project.version
+    versionType = project.mod_version_type
+
+    gameVersions = supportedMinecraftVersions
+    loaders = ["fabric", "quilt"]
+    changelog = changelogText
+    dependencies
+    {
+        required.project "fabric-api"
+    }
+
+    uploadFile = remapJar
+}
+
+
+tasks.register('curseforge', TaskPublishCurseForge)
+{
+    group 'upload'
+    apiToken = project.findProperty("curseforge_token") ?: ""
+
+    disableVersionDetection()
+    def mainFile = upload(curseforge_mod_id, remapJar)
+    mainFile.changelog = changelogText
+    mainFile.changelogType = 'markdown'
+    mainFile.releaseType = project.mod_version_type
+    mainFile.displayName = versionDisplayName
+    mainFile.addModLoader('Fabric')
+    mainFile.addModLoader('Quilt')
+    for (ver in supportedMinecraftVersions)
+    {
+        mainFile.addGameVersion(ver)
+    }
+    mainFile.addRelation('fabric-api', 'requiredDependency')
+}
